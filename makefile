@@ -22,7 +22,7 @@ objects := $(addprefix $(build_dir), $(target_name))
 objects := $(addsuffix .o, $(objects))
 
 headers := $(addprefix $(header_dir), $(headers_name)) 
-headers := $(addsuffix .h, $(headers)) 
+headers := $(addsuffix .hpp, $(headers)) 
 
 
 
