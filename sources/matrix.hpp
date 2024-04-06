@@ -30,17 +30,18 @@ public:
 
     // operator overloading
     //Matrix operator+(const Matrix& other);
-    /*
-    explicit operator double() const;
-    friend Matrix& operator+(const Matrix& a, const Matrix& b);
-    Matrix& operator-(const Matrix& other);
-    friend Matrix& operator-(const Matrix& a, const Matrix& b);
-    Matrix& operator*(const Matrix& other);
-    friend Matrix& operator*(const Matrix& a, const Matrix& b);
     Matrix& operator+=(const Matrix& other);
+    friend Matrix operator+(const Matrix& a, const Matrix& b);
+
+    friend Matrix operator-(const Matrix& a, const Matrix& b);
+    Matrix& operator-=(const Matrix& other);
+
+    friend Matrix operator*(const Matrix& a, const Matrix& b);
     Matrix& operator*=(const Matrix& other);
     Matrix& operator*=(double a);
+
     bool operator==(const Matrix& other);
     bool operator!=(const Matrix& other);
-    */
+
+    explicit operator double() const;
 };

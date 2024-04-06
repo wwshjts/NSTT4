@@ -2,6 +2,14 @@
 #include <vector>
 #include "../sources/matrix.hpp"
 
+static size_t square(size_t a) {
+    return a * a;
+}
+
+static size_t min(size_t a, size_t b) {
+    return (a <= b) ? a : b;
+}
+
 TEST(MemoryManagementTest, DirectCtr) {
     size_t m1_size = 1000;
     size_t m2_size = 2000;
@@ -57,6 +65,192 @@ TEST(MemoryManagementTest, MoveCtr) {
     }
 }
 
+TEST(PlusOperatorOverloading, PlusTest) {
+    size_t test_size = 3;
+    Matrix a { test_size };
+    Matrix b { test_size };
+
+    int cnt = 0;
+    for (size_t i = 0; i < test_size; i++) {
+        for (size_t j = 0; j < test_size; j++) {
+            a.set(i, j, cnt);
+            b.set(i, j, 10 - cnt);
+            cnt++;
+        }
+    }
+    Matrix c = a + b;
+    for (size_t i = 0; i < test_size; i++) {
+        for (size_t j = 0; j < test_size; j++) {
+            EXPECT_EQ(10, c.get(i, j));
+        }
+    }
+}
+
+TEST(PlusOperatorOverloading, PlusTestWithDeferentSizes) {
+    std::vector<double> vec_a = {2, 2, 2};
+    std::vector<double> vec_b = {40, 40, 40, 50};
+
+    Matrix a { vec_a };
+    Matrix b { vec_b };
+
+    Matrix c = a + b;
+    EXPECT_EQ(min(vec_a.size(), vec_b.size()), c.size());
+    for (size_t i = 0; i < min(vec_a.size(), vec_b.size()); i++) {
+        for (size_t j = 0; j < min(vec_a.size(), vec_b.size()); j++) {
+            if (i == j) {
+                EXPECT_EQ(42, c.get(i, j));
+            } else {
+                EXPECT_EQ(0, c.get(i, j));
+            }
+        }
+    }
+}
+
+TEST(PlusOperatorOverloading, ImplicitConversion) {
+    std::vector<double> vec_a = {2, 2, 2};
+    std::vector<double> vec_b = {40, 40, 40, 50};
+
+    Matrix a { vec_a };
+
+    Matrix c = vec_b + a;
+    EXPECT_EQ(min(vec_a.size(), vec_b.size()), c.size());
+    for (size_t i = 0; i < min(vec_a.size(), vec_b.size()); i++) {
+        for (size_t j = 0; j < min(vec_a.size(), vec_b.size()); j++) {
+            if (i == j) {
+                EXPECT_EQ(42, c.get(i, j));
+            } else {
+                EXPECT_EQ(0, c.get(i, j));
+            }
+        }
+    }
+}
+
+TEST(PlusOperatorOverloading, PlusAssignmentOperator) {
+    std::vector<double> vec_a = {21, 21, 21};
+    size_t size = vec_a.size();
+
+    Matrix a { vec_a };
+    a += a;
+
+    for (size_t i = 0; i < size; i++) {
+        for (size_t j = 0; j < size; j++) {
+            if (i == j) {
+                EXPECT_EQ(42, a.get(i, j));
+            } else {
+                EXPECT_EQ(0, a.get(i, j));
+            }
+        }
+    }
+}
+
+TEST(DoubleConversionTest, ConversionToDouble) {
+    size_t test_size = 20;
+    Matrix m { test_size };
+
+    int cnt = 0;
+    for (size_t i = 0; i < test_size; i++) {
+        for (size_t j = 0; j < test_size; j++) {
+            m.set(i, j, cnt);
+            cnt++;
+        }
+    }
+
+    EXPECT_EQ(square(test_size) * (square(test_size) - 1) / 2, static_cast<double>(m));
+}
+
+TEST(MinusOperatorOverloading, MinusOperator) {
+    size_t test_size = 3;
+    Matrix a { test_size };
+    Matrix b { test_size };
+
+    int cnt = 0;
+    for (size_t i = 0; i < test_size; i++) {
+        for (size_t j = 0; j < test_size; j++) {
+            a.set(i, j, cnt);
+            b.set(i, j, cnt);
+            cnt++;
+        }
+    }
+    Matrix c = a - b;
+    for (size_t i = 0; i < test_size; i++) {
+        for (size_t j = 0; j < test_size; j++) {
+            EXPECT_EQ(0, c.get(i, j));
+        }
+    }
+}
+
+TEST(MinusOperatorOverloading, MinusAssignmentOperator) {
+    std::vector<double> vec_a = {21, 21, 21};
+    size_t size = vec_a.size();
+
+    Matrix a { vec_a };
+    a -= a;
+
+    for (size_t i = 0; i < size; i++) {
+        for (size_t j = 0; j < size; j++) {
+            EXPECT_EQ(0, a.get(i, j));
+        }
+    }
+
+}
+
+TEST(ComparisonOperator, Equal) {
+    std::vector<double> vec_a = {42, 42, 42};
+    size_t size = vec_a.size();
+
+    Matrix a { vec_a };
+    Matrix b = a;
+
+    EXPECT_TRUE(a == b);
+}
+
+TEST(ComparisonOperator, NotEqual) {
+    std::vector<double> vec_a = {42, 42, 42};
+    size_t size = vec_a.size();
+
+    Matrix a { vec_a };
+    Matrix b = a;
+    b *= 42;
+
+    EXPECT_TRUE(a != b);
+}
+
+TEST(MultiplicationOperatorOverloadingTest, MultiplicationAssignmentOperator) {
+    std::vector<double> vec_a = {2, 2, 2};
+    size_t size = vec_a.size();
+
+    Matrix a { vec_a };
+    a *= a;
+
+    for (size_t i = 0; i < size; i++) {
+        for (size_t j = 0; j < size; j++) {
+            if (i == j) {
+                EXPECT_EQ(4, a.get(i, j));
+            } else {
+                EXPECT_EQ(0, a.get(i, j));
+            }
+        }
+    }
+
+}
+
+TEST(MultiplicationOperatorOverloadingTest, MultiplicationAssignmentOperatorDouble) {
+    std::vector<double> vec_a = {2, 2, 2};
+    size_t size = vec_a.size();
+
+    Matrix a { vec_a };
+    a *= 2;
+
+    for (size_t i = 0; i < size; i++) {
+        for (size_t j = 0; j < size; j++) {
+            if (i == j) {
+                EXPECT_EQ(4, a.get(i, j));
+            } else {
+                EXPECT_EQ(0, a.get(i, j));
+            }
+        }
+    }
+}
 int main() {
     testing::InitGoogleTest();
     return RUN_ALL_TESTS();

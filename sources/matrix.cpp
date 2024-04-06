@@ -3,6 +3,10 @@
 #include <stdexcept>
 #include "matrix.hpp"
 
+static size_t min(size_t a, size_t b) {
+    return (a <= b) ? a : b;
+}
+
 void Matrix::init_data() {
     data_ = new double*[n_];
     for (size_t i = 0; i < n_; i++) {
@@ -95,4 +99,108 @@ double Matrix::get(size_t i, size_t j) const {
 void Matrix::set(size_t i, size_t j, double val) {
     check_args(i, j);
     data_[i][j] = val;
+}
+
+// operator overloading
+Matrix& Matrix::operator+=(const Matrix& other) {
+    size_t size = min(n_, other.n_);
+    for (size_t i = 0; i < size; i++) {
+        for (size_t j = 0; j < size; j++) {
+            set(i, j, get(i, j) + other.get(i, j));
+        }
+    }
+    return *this;
+}
+
+Matrix& Matrix::operator*=(const Matrix& other) {
+    size_t size = min(n_, other.n_);
+    for (size_t i = 0; i < size; i++) {
+        for (size_t j = 0; j < size; j++) {
+            set(i, j, get(i, j) * other.get(i, j));
+        }
+    }
+    return *this;
+}
+
+Matrix &Matrix::operator*=(double a) {
+    for (size_t i = 0; i < size(); i++) {
+        for (size_t j = 0; j < size(); j++) {
+            set(i, j, get(i, j) * a);
+        }
+    }
+    return *this;
+}
+
+bool Matrix::operator==(const Matrix& other) {
+    if (n_ != other.n_) {
+        return false;
+    }
+
+    for (size_t i = 0; i < size(); i++) {
+        for (size_t j = 0; j < other.size(); j++) {
+            if (get(i, j) != other.get(i, j)) {
+                return false;
+            }
+        } 
+    }
+    return true;
+}
+
+bool Matrix::operator!=(const Matrix &other) {
+    return !(*this == other);
+}
+
+Matrix::operator double() const
+{
+    long double sum = 0;
+
+    for (size_t i = 0; i < n_; i++) {
+        for (size_t j = 0; j < n_; j++) {
+            sum += get(i, j);
+        }
+    }
+    return sum;
+}
+
+Matrix& Matrix::operator-=(const Matrix& other) {
+    size_t size = min(n_, other.n_);
+    for (size_t i = 0; i < size; i++) {
+        for (size_t j = 0; j < size; j++) {
+            set(i, j, get(i, j) - other.get(i, j));
+        }
+    }
+    return *this;
+}
+
+Matrix operator+(const Matrix& a, const Matrix& b) {
+    size_t size = min(a.n_, b.n_);
+    Matrix m { size };
+    for (size_t i = 0; i < size; i++) {
+        for (size_t j = 0; j < size; j++) {
+            m.set(i, j, a.get(i, j) + b.get(i, j));
+        }
+    }
+    return m;   
+}
+
+Matrix operator-(const Matrix& a, const Matrix& b) {
+    size_t size = min(a.size(), b.size());
+    Matrix m { size };
+    for (size_t i = 0; i < size; i++) {
+        for (size_t j = 0; j < size; j++) {
+            m.set(i, j, a.get(i, j) - b.get(i, j));
+        }
+    }
+    return m;
+}
+
+Matrix operator*(const Matrix& a, const Matrix& b) {
+    size_t size = min(a.size(), b.size());
+    Matrix m { size };
+    for (size_t i = 0; i < size; i++) {
+        for (size_t j = 0; j < size; j++) {
+            m.set(i, j, a.get(i, j) * b.get(i, j));
+        }
+    }
+    return m;
 }
