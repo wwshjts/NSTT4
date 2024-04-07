@@ -251,6 +251,22 @@ TEST(MultiplicationOperatorOverloadingTest, MultiplicationAssignmentOperatorDoub
         }
     }
 }
+
+TEST(AccessOperatorTest, Access) {
+    std::vector<double> vec_a = {2, 2, 2};
+    Matrix m { vec_a };
+
+    EXPECT_EQ(2, m[2][2]);
+}
+
+TEST(AccessOperatorTest, Assignment) {
+    std::vector<double> vec_a = {2, 2, 2};
+    Matrix m { vec_a };
+
+    m[2][2] = 42;
+    EXPECT_EQ(42, m[2][2]);
+}
+
 int main() {
     testing::InitGoogleTest();
     return RUN_ALL_TESTS();

@@ -10,9 +10,20 @@ class Matrix {
     void free_data();
     void check_args(size_t i, size_t j) const;
 
+    class RowGetter {
+        double* row_;
+        size_t size_;
+    public:
+        RowGetter(double* data, size_t size);
+        RowGetter(const RowGetter& other);
+        ~RowGetter();
+
+        RowGetter& operator=(const RowGetter& other);
+        double& operator[](size_t j);        
+    };
+
 public:
     Matrix(size_t n);
-    Matrix(const std::pair<size_t, size_t>& size);
 
     Matrix(const Matrix& other);
     Matrix(Matrix&& m);
@@ -29,7 +40,6 @@ public:
     void set(size_t i, size_t j, double value);
 
     // operator overloading
-    //Matrix operator+(const Matrix& other);
     Matrix& operator+=(const Matrix& other);
     friend Matrix operator+(const Matrix& a, const Matrix& b);
 
@@ -39,6 +49,8 @@ public:
     friend Matrix operator*(const Matrix& a, const Matrix& b);
     Matrix& operator*=(const Matrix& other);
     Matrix& operator*=(double a);
+
+    RowGetter operator[](size_t i);
 
     bool operator==(const Matrix& other);
     bool operator!=(const Matrix& other);

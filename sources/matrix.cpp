@@ -131,6 +131,10 @@ Matrix &Matrix::operator*=(double a) {
     return *this;
 }
 
+Matrix::RowGetter Matrix::operator[](size_t i) {
+    return RowGetter { data_[i], n_ };
+}
+
 bool Matrix::operator==(const Matrix& other) {
     if (n_ != other.n_) {
         return false;
@@ -203,4 +207,20 @@ Matrix operator*(const Matrix& a, const Matrix& b) {
         }
     }
     return m;
+}
+
+Matrix::RowGetter::RowGetter(double* data, size_t size) : row_ { data }, size_ { size } {}
+
+Matrix::RowGetter::RowGetter(const RowGetter& other) : row_ { other.row_ } {}
+
+// empty dstr
+Matrix::RowGetter::~RowGetter() {}
+
+Matrix::RowGetter& Matrix::RowGetter::operator=(const RowGetter& other) {
+    row_ = other.row_;
+    return *this;
+}
+
+double& Matrix::RowGetter::operator[](size_t j) {
+    return row_[j];
 }
