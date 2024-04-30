@@ -42,6 +42,12 @@ void Matrix::check_args(size_t i, size_t j) const {
     }
 }
 
+void Matrix::check_arg(size_t i) const {
+    if (i >= n_) {
+        throw std::out_of_range("Index error: indexes out of range");
+    }
+}
+
 Matrix::Matrix(const Matrix& other) : n_{ other.n_ } { 
     init_data();
     cpy_data(other);
@@ -132,6 +138,9 @@ Matrix &Matrix::operator*=(double a) {
 }
 
 Matrix::RowGetter Matrix::operator[](size_t i) {
+    if (i >= n_) {
+        throw std::out_of_range("Index out of range");
+    }
     return RowGetter { data_[i], n_ };
 }
 
@@ -209,18 +218,12 @@ Matrix operator*(const Matrix& a, const Matrix& b) {
     return m;
 }
 
+
 Matrix::RowGetter::RowGetter(double* data, size_t size) : row_ { data }, size_ { size } {}
 
-Matrix::RowGetter::RowGetter(const RowGetter& other) : row_ { other.row_ } {}
-
-// empty dstr
-Matrix::RowGetter::~RowGetter() {}
-
-Matrix::RowGetter& Matrix::RowGetter::operator=(const RowGetter& other) {
-    row_ = other.row_;
-    return *this;
-}
-
 double& Matrix::RowGetter::operator[](size_t j) {
+    if (j >= size_) {
+        throw std::out_of_range("Index out of range");
+    }
     return row_[j];
 }

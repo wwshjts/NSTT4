@@ -9,16 +9,15 @@ class Matrix {
     void cpy_data(const Matrix& other);
     void free_data();
     void check_args(size_t i, size_t j) const;
+    void check_arg(size_t i) const;
 
     class RowGetter {
         double* row_;
         size_t size_;
     public:
         RowGetter(double* data, size_t size);
-        RowGetter(const RowGetter& other);
-        ~RowGetter();
+        ~RowGetter() = default;
 
-        RowGetter& operator=(const RowGetter& other);
         double& operator[](size_t j);        
     };
 
